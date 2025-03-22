@@ -2,25 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Interfaces\TimeSlotRepositoryInterface;
 use Illuminate\Http\Request;
+use App\Models\TimeSlot;
 
 class TimeSlotController extends Controller
 {
-    protected $timeSlotRepository;
-
-    public function __construct(TimeSlotRepositoryInterface $timeSlotRepository)
-    {
-        $this->timeSlotRepository = $timeSlotRepository;
-    }
-
     public function getAvailableSlots($arenaId)
     {
-        return response()->json($this->timeSlotRepository->findAvailableSlots($arenaId), 200);
+        return response()->json(
+            TimeSlot::where('arena_id', $arenaId)->where('is_reserved', false)->get(),
+            200
+        );
+    }
+
+    private function requireAuth()
+    {
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthorized. Please log in.'], 401);
+        }
+        return null;
     }
 
     public function store(Request $request)
     {
+        if ($authResponse = $this->requireAuth()) return $authResponse;
+
+        if ($request->user()->role !== 'owner') {
+            return response()->json(['message' => 'Access denied. Only owners can create time slots.'], 403);
+        }
+
         $validated = $request->validate([
             'arena_id' => 'required|exists:arenas,id',
             'start_time' => 'required|date_format:H:i',
@@ -28,7 +38,7 @@ class TimeSlotController extends Controller
             'duration' => 'required|integer|min:30|max:180',
         ]);
 
-        $timeSlot = $this->timeSlotRepository->create($validated);
+        $timeSlot = TimeSlot::create($validated);
         return response()->json($timeSlot, 201);
     }
 }
