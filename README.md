@@ -1,66 +1,187 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+```markdown
+# 🏟️ Sports Arena API (Laravel 11)
 
-## About Laravel
+This API manages sports arena bookings, allowing **owners** to create arenas and **customers** to reserve time slots.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Features
+- ✅ **User Authentication** (Laravel Sanctum)
+- ✅ **Owners Create Arenas**
+- ✅ **Time Slot Management**
+- ✅ **Booking System with Expiration Handling**
+- ✅ **Concurrency Handling with Database Locking**
+- ✅ **Postman Collection Included**
+- ✅ **Role-Based Access Control (RBAC)** for Owners and Customers
+- ✅ **Unit & Feature Tests**
+- ✅ **Optimized Database Queries**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🔧 Installation & Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### **1️⃣ Clone Repository**
+```sh
+git clone https://github.com/Rajaei453/sports-arena-api.git
+cd sports-arena-api
+```
 
-## Learning Laravel
+### **2️⃣ Install Dependencies**
+Ensure you have PHP 8.2 or higher installed. Then, run the following command to install dependencies:
+```sh
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **3️⃣ Set Up Environment**
+Create a copy of the example environment file:
+```sh
+cp .env.example .env
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Generate an application key:
+```sh
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### **4️⃣ Configure Database**
+Update your `.env` file with your database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-## Laravel Sponsors
+Run the migrations and seed the database:
+```sh
+php artisan migrate --seed
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### **5️⃣ Run the Server**
+Start the Laravel development server:
+```sh
+php artisan serve
+```
 
-### Premium Partners
+### **6️⃣ API Documentation**
+Use Postman to test the API:  
+[📥 Download Postman Collection](https://github.com/Rajaei453/sports-arena-api/blob/main/SpSports Arena API.postman_collection.json)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🛠️ Running Tests
 
-## Contributing
+### **Unit Tests**
+Run unit tests to verify core functionality:
+```sh
+php artisan test --filter=AuthTest
+php artisan test --filter=ArenaTest
+php artisan test --filter=TimeSlotTest
+php artisan test --filter=BookingTest
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+## 🏆 Authentication Flow
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### **1️⃣ Register**
+Endpoint: **POST /api/auth/register**  
+Register a new user with the following parameters:
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "owner"
+}
+```
 
-## Security Vulnerabilities
+### **2️⃣ Login**
+Endpoint: **POST /api/auth/login**  
+Log in with the following parameters:
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+Upon successful login, you will receive a JSON Web Token (JWT) in the response:
+```json
+{
+  "message": "Login successful",
+  "token": "generated_access_token",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "owner"
+  }
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### **3️⃣ Use Token in Requests**
+For all authenticated requests, include the token in the `Authorization` header:
+```plaintext
+Authorization: Bearer YOUR_TOKEN_HERE
+```
 
-## License
+## 📡 API Endpoints
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### **Authentication**
+- **POST /api/auth/register**: Register a new user.
+- **POST /api/auth/login**: Log in a user.
+- **POST /api/auth/logout**: Log out a user (requires authentication).
+
+### **Arena Management**
+- **GET /api/arenas**: Get all arenas.
+- **GET /api/arenas/{id}**: Get a specific arena by ID.
+- **POST /api/arenas**: Create a new arena (requires owner role).
+
+### **Time Slot Management**
+- **GET /api/time-slots/available/{arenaId}**: Get available time slots for an arena.
+- **POST /api/time-slots**: Create a new time slot (requires owner role).
+
+### **Booking System**
+- **POST /api/bookings/reserve**: Reserve a time slot (requires customer role).
+- **POST /api/bookings/release-expired**: Release unconfirmed bookings (requires owner role).
+
+## 🛡️ Security & Concurrency Handling
+
+### **Security**
+- Authentication is enforced using Laravel Sanctum.
+- Middleware ensures that only authorized users can access certain routes.
+- Unauthorized users receive a JSON response with a 401 status code.
+
+### **Concurrency Handling**
+- Time slots are locked using database transactions to prevent double bookings.
+- Unconfirmed bookings are released after 10 minutes using a scheduled job.
+
+## 🗂️ Folder Structure
+
+The project is organized using the **Domain-Driven Design (DDD)** structure:
+
+```
+app/
+├── Domain/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+├── Application/
+│   ├── DTOs/
+│   ├── UseCases/
+├── Infrastructure/
+│   ├── Persistence/
+│   ├── Providers/
+│   ├── Controllers/
+```
+
+## 📝 Documentation
+
+### **Deploy to Production**
+- Use Laravel Forge, AWS, or DigitalOcean for hosting.
+- Configure environment variables in `.env`.
+- Use Supervisor to manage queue workers if needed.
+
+## 🤝 Contributors
+- **Rajaei Hammoud (@Rajaei453)**
+
+## 📜 License
+This project is licensed under the **MIT License**.
+
