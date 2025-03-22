@@ -1,25 +1,22 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArenaController;
 use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\BookingController;
-use Illuminate\Support\Facades\Route;
 
-// Arena Routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/arenas', [ArenaController::class, 'index']);
-    Route::post('/arenas', [ArenaController::class, 'store']);
-    Route::get('/arenas/{id}', [ArenaController::class, 'show']);
+Route::prefix('arenas')->group(function () {
+    Route::get('/', [ArenaController::class, 'index']); // Get all arenas
+    Route::get('/{id}', [ArenaController::class, 'show']); // Get a single arena
+    Route::post('/', [ArenaController::class, 'store']); // Create an arena
 });
 
-// Time Slot Routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/arenas/{arenaId}/slots', [TimeSlotController::class, 'index']);
-    Route::post('/slots/reserve', [TimeSlotController::class, 'reserve']);
+Route::prefix('time-slots')->group(function () {
+    Route::get('/available/{arenaId}', [TimeSlotController::class, 'getAvailableSlots']); // Get available slots
+    Route::post('/', [TimeSlotController::class, 'store']); // Create a time slot
 });
 
-// Booking Routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/bookings', [BookingController::class, 'store']);
-    Route::post('/bookings/release-expired', [BookingController::class, 'releaseExpired']);
+Route::prefix('bookings')->group(function () {
+    Route::post('/reserve', [BookingController::class, 'reserveSlot']); // Reserve a slot
+    Route::post('/release-expired', [BookingController::class, 'releaseExpiredBookings']); // Release expired bookings
 });

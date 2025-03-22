@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Repositories\Interfaces\BookingRepositoryInterface;
@@ -13,22 +14,22 @@ class BookingController extends Controller
         $this->bookingRepository = $bookingRepository;
     }
 
-    public function store(Request $request)
+    public function reserveSlot(Request $request)
     {
-        $data = $request->validate([
-            'slot_id' => 'required|integer',
-            'user_id' => 'required|integer',
+        $validated = $request->validate([
+            'time_slot_id' => 'required|exists:time_slots,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         try {
-            $booking = $this->bookingRepository->createBooking($data['slot_id'], $data['user_id']);
+            $booking = $this->bookingRepository->createBooking($validated['time_slot_id'], $validated['user_id']);
             return response()->json($booking, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function releaseExpired()
+    public function releaseExpiredBookings()
     {
         $this->bookingRepository->releaseExpiredBookings();
         return response()->json(['message' => 'Expired bookings released'], 200);

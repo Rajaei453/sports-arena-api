@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Repositories\Interfaces\TimeSlotRepositoryInterface;
@@ -13,24 +14,21 @@ class TimeSlotController extends Controller
         $this->timeSlotRepository = $timeSlotRepository;
     }
 
-    public function index($arenaId)
+    public function getAvailableSlots($arenaId)
     {
-        $slots = $this->timeSlotRepository->findAvailableSlots($arenaId);
-        return response()->json($slots);
+        return response()->json($this->timeSlotRepository->findAvailableSlots($arenaId), 200);
     }
 
-    public function reserve(Request $request)
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'slot_id' => 'required|integer',
-            'user_id' => 'required|integer',
+        $validated = $request->validate([
+            'arena_id' => 'required|exists:arenas,id',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'duration' => 'required|integer|min:30|max:180',
         ]);
 
-        try {
-            $this->timeSlotRepository->reserveSlot($data['slot_id'], $data['user_id']);
-            return response()->json(['message' => 'Slot reserved successfully'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
+        $timeSlot = $this->timeSlotRepository->create($validated);
+        return response()->json($timeSlot, 201);
     }
 }
